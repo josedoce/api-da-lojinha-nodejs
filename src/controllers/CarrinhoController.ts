@@ -7,9 +7,22 @@ import * as yup from 'yup';
 class CarrinhoController {
     async carrinho(req: Request, res: Response){
         
+        const carrinho = getCustomRepository(CarrinhoRepository);
+        const produtos = await carrinho.find({
+            where: {id_cliente: req.usuario},
+            relations: ['produto']
+        });
         
-        res.status(200).json({eita: 'chegamos'});
-        
+        const servirProdutos: Array<object>=[];
+
+        produtos.forEach((produtoIdx)=>{
+            const {produto,...produtos} = produtoIdx;
+            const mesclagem = {...produtos, ...produto};
+            const {codigo,pago,troca, ...resto} = mesclagem;
+            servirProdutos.push(resto)
+        });
+
+        res.status(200).json(servirProdutos);
     }
     async setCarrinho(req: Request, res: Response){
         const {id} = req.usuario;
@@ -28,7 +41,7 @@ class CarrinhoController {
 
         const carrinho = getCustomRepository(CarrinhoRepository);
         
-        const existeProduto = await carrinho.findOne({where: {id_produto: produto.id}});
+        const existeProduto = await carrinho.findOne({where: {id_produto: produto.id, id_cliente: id}});
         
         if(existeProduto){
             existeProduto.quantidade = qtd;

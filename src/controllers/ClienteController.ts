@@ -38,8 +38,6 @@ class ClienteController {
         if(!usuarioSalvo){
             return res.status(400).json({error: 'usuario não foi salvo'});
         }
-        
-        
 
         jwt.sign({id: usuarioSalvo.id, email: usuarioSalvo.email}, chave, {expiresIn: expiracao}, (err, token)=>{
             if(err){
