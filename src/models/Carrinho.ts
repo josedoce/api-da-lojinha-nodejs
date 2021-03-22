@@ -11,17 +11,13 @@ class Carrinho {
     
     @Column()
     id_produto: string;
+
+    @Column()
+    id_cliente: string;
     
     @ManyToOne(()=>Prateleira)
     @JoinColumn({name:'id_produto'})
     produto: Prateleira;
-
-    @Column()
-    id_cliente: string;
-
-    @ManyToOne(()=>Clientes)
-    @JoinColumn({name:'id_cliente'})
-    cliente: Clientes;
 
     @Column({default: 0})
     quantidade: number;
@@ -41,6 +37,8 @@ class Carrinho {
     @CreateDateColumn()
     created_at: Date;
 
+    @ManyToOne(()=>Clientes, clientes=>clientes.carrinho)
+    cliente: Clientes;
     constructor(){
         if(!this.id){
             this.id = uuid();

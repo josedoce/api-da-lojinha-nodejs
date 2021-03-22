@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import {v4 as uuid }from 'uuid';
+import { Carrinho } from "./Carrinho";
 
 @Entity('clientes')
 class Clientes{
@@ -38,6 +39,9 @@ class Clientes{
 
     @CreateDateColumn()
     created_at: Date;
+
+    @OneToMany(()=>Carrinho, carrinho=>carrinho.cliente)
+    carrinho: Carrinho[];
 
     constructor(){
         if(!this.id){
