@@ -13,6 +13,11 @@ export class CreatePrateleira1614382722676 implements MigrationInterface {
                         isPrimary: true,
                     },
                     {
+                        name: 'id_vendedor',
+                        type: 'uuid',
+                        default: false
+                    },
+                    {
                         name: 'codigo',
                         type: 'varchar'
                     },
@@ -35,9 +40,59 @@ export class CreatePrateleira1614382722676 implements MigrationInterface {
                         isNullable: true,
                     },
                     {
+                        name: 'peso',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'formato',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'comprimento',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'altura',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'largura',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'servico',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'diametro',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'aprovado',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
                         name: 'created_at',
                         type: 'timestamp',
                         default: 'now()',
+                    }
+                ],
+                foreignKeys: [
+                    {
+                        name: 'FKVendedores',
+                        referencedTableName: 'vendedores',
+                        referencedColumnNames: ['id'],
+                        columnNames: ['id_vendedor'],
+                        onDelete: 'CASCADE',
+                        onUpdate: 'CASCADE'
                     }
                 ]
             })
