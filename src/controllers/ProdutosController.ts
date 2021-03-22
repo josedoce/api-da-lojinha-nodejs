@@ -16,8 +16,7 @@ class ProdutosController {
             servirProdutos.push(resto)
         });
 
-        res.render('home')
-        //return res.json(servirProdutos);
+        return res.json(servirProdutos);
     }
     async produtosPage(req: Request, res: Response){
 

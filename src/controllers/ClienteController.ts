@@ -9,18 +9,20 @@ const expiracao = process.env.JWT_TOKEN_EXPIRATION;
 class ClienteController {
     async criarUsuario(req: Request, res: Response){
         const {nome, email, senha} = req.body;
+
         const schema = yup.object().shape({
-            nome: yup.string().required('O nome é obrigatorio.'),
-            email: yup.string().email('Um email valido é necessário.').required('É necessario um email para validação'),
-            senha: yup.string().required('Uma senha com pelo menos 8 caracteres é necessaria.').min(8,'senha tem que ter pelo menos 8 caracteres').max(32, 'o tamanho da senha se limita a 32 caracteres')
+            nome: yup.string().required(),
+            email: yup.string().email().required(),
+            senha: yup.string().required().min(8).max(32),
         });
+        
         try {
             await schema.validate(req.body, {abortEarly: false});
         } catch (error) {
-            return res.status(400).json({error: error});
+            return res.status(400).json({error: 'Algum dado foi omitido.'});
         }
         const usuario = getCustomRepository(ClientesRepository);
-        
+
         const existeUsuario = await usuario.findOne({email: email});
 
         if(existeUsuario){
