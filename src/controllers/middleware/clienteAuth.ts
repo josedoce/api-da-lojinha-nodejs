@@ -15,17 +15,18 @@ const clienteAuth = async (req: Request, res: Response, next: NextFunction )=>{
         return res.status(400).json({error: error});
     }
     let token = authToken.split(' ');
+    
         if(token[1] != undefined){
             jwt.verify(token[1], chave,(err, dados)=>{
-            
+                
                 if(err){
-                    return res.status(401).json({erro: 'token invalido'})
+                    return res.status(401).json({erro: 'token invalido ou expirado.'})
                 }
                 
                 const usuario = getCustomRepository(ClientesRepository);
 
                 usuario.findOne({where: {id: dados['id'], email: dados['email']}}).then((usuarioExiste)=>{
-
+                    
                     if(usuarioExiste.isCliente === 'true'){
                         //regra=usuário é cliente.
                         req.usuario = {id: usuarioExiste.id};
@@ -38,7 +39,7 @@ const clienteAuth = async (req: Request, res: Response, next: NextFunction )=>{
 
                     }
                     
-                })
+                }).catch((e)=> res.status(401).json({erro: 'token invalido'}))
                 
             })
         }

@@ -1,11 +1,11 @@
 import { Request,NextFunction, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
-import { ClientesRepository } from '../../repositories/ClientesRepository';
 import * as yup from 'yup';
 import jwt from 'jsonwebtoken';
+import { VendedoresRepository } from '../../repositories/VendedoresRepository';
 const chave = process.env.JWT_SECRET_SEVER_TOKEN;
 
-const clienteAuth = async (req: Request, res: Response, next: NextFunction )=>{
+const vendedorAuth = async (req: Request, res: Response, next: NextFunction )=>{
     const authToken = req.headers.authorization;
     
     const schema = yup.string().required('Um token é necessario para está operação').min(100, 'Um token possui muitos caracteres...').max(240,'Este token não pode ser superior a 240 caracteres...');
@@ -19,22 +19,20 @@ const clienteAuth = async (req: Request, res: Response, next: NextFunction )=>{
             jwt.verify(token[1], chave,(err, dados)=>{
             
                 if(err){
-                    return res.status(401).json({erro: 'token invalido ou expirado.'})
+                    return res.status(401).json({erro: 'token invalido'})
                 }
                 
-                const usuario = getCustomRepository(ClientesRepository);
+                const usuario = getCustomRepository(VendedoresRepository);
 
                 usuario.findOne({where: {id: dados['id'], email: dados['email']}}).then((usuarioExiste)=>{
 
-                    if(usuarioExiste.isCliente === 'true'){
-                        //regra=usuário é cliente.
+                    if(usuarioExiste.isVendedor === 'true'){
                         req.usuario = {id: usuarioExiste.id};
                         next();
-
                     }else{
                         //regra=usuário não é cliente.
-                        //res.redirect('/criar_cliente');  //produção
-                        res.status(401).json({error: 'Você ainda não é cliente, preecha todos os dados para se tornar.'});
+                        //res.redirect('/completar_cadastro');  //produção
+                        res.status(401).json({error: 'Você ainda não é vendedor, preecha todos os dados para se tornar.'});
 
                     }
                     
@@ -44,4 +42,4 @@ const clienteAuth = async (req: Request, res: Response, next: NextFunction )=>{
         }
 }
 
-export {clienteAuth};
+export {vendedorAuth};
