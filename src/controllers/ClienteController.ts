@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import { ClientesRepository } from '../repositories/ClientesRepository';
 import {crieHash, compareHash} from '../gen/bcryptjs';
 import jwt from 'jsonwebtoken';
+import { ListaNegraRepository } from '../repositories/ListaNegraRepository';
 const chave = process.env.JWT_SECRET_SEVER_TOKEN;
 const expiracao = process.env.JWT_TOKEN_EXPIRATION;
 class ClienteController {
@@ -51,6 +52,19 @@ class ClienteController {
         });
     }
     async logarUsuario(req: Request, res: Response){
+        //apague lista negra
+        const tokenNegro = getCustomRepository(ListaNegraRepository);
+        const lista = await tokenNegro.find();
+
+        lista.forEach(async(element)=>{
+            const dados = jwt.decode(element.token);
+            var horaAtual = Date.now() / 1000;
+            if ( dados['exp'] < horaAtual) {
+                await tokenNegro.delete(element.id);
+            }
+        })
+        
+
         const {email, senha} = req.body;
         const schema = yup.object().shape({
             email: yup.string().email('Um email valido é necessário.').required('É necessario um email para login'),
@@ -83,6 +97,21 @@ class ClienteController {
 
             return res.status(201).json({existeUsuario, token});
         });
+        
+    }
+    async logout(req: Request, res: Response){
+        const listaNegra = getCustomRepository(ListaNegraRepository);
+        const tokenExists = await listaNegra.find({where:{token: req.usuario.token}});
+        
+        if(!tokenExists[0]){
+            const dados = listaNegra.create({
+                token: req.usuario.token
+            });
+            await listaNegra.save(dados);
+            res.status(201).json({tudoOk:"O token foi invalidado"});
+            return;
+        }
+        res.status(401).json({erro: 'O token não pode ser invalidado.'})
         
     }
     async criarCliente(){
