@@ -1,4 +1,4 @@
-import { CEPResposta, PrecoPrazo} from "correios-brasil";
+import { CEPResposta, PrecoPrazo, PrecoPrazoResposta} from "correios-brasil";
 const {consultarCep, calcularPrecoPrazo} = require("correios-brasil");
 
 enum Formato{
@@ -16,39 +16,26 @@ enum codigoServico {
     SEDEX_10_A_VISTA_E_A_FATURAR = "40215",
     SEDEX_HOJE_VAREJO = "40290"
 }
-
-const entrega:PrecoPrazo = { 
-    sCepOrigem:  "14403-471",
-    sCepDestino:  "51275-210",
-    nVlPeso:  "1",
-    nCdFormato:  Formato.CAIXA_PACOTE,
-    nVlComprimento:  "20",
-    nVlAltura:  "20",
-    nVlLargura:  "20",
-    nCdServico:  [
-        codigoServico.SEDEX_A_VISTA,
-        codigoServico.PAC_A_VISTA
-    ], //Array com os códigos de serviço
-    nVlDiametro:  "0",
-}
-
-const cepExiste = (cep:string)=>{
-    let t;
-    function setT(r){
-        t = r;
+const getServico = (cod: string):{detalhe: string, codigo:string}=> {
+    switch (cod) {
+        case 'sedex'||codigoServico.SEDEX_A_VISTA:
+            return {
+                detalhe: 'Sedex a vista',
+                codigo: codigoServico.SEDEX_A_VISTA
+            };
+       
+        case 'pac'||codigoServico.PAC_A_VISTA:
+            return {
+                detalhe: 'Pac a vista',
+                codigo: codigoServico.PAC_A_VISTA
+            };
+        default:
+            return {
+                detalhe: 'Codigo não bate com nenhuma alternativa.',
+                codigo: '"'+cod+'" não existe'
+            };
     }
-    consultarCep(cep).then((r: CEPResposta)=>{
-        setT("eae, corno");
-        return true;
-    }).catch(()=>{
-        return false;
-    });
-    return t;
 }
-//console.log(cepExiste(cep))
-// calcularPrecoPrazo(entrega).then((r: PrecoPrazo)=>{
-//     console.log(r)
-// })
-
-
-export {};
+export {Formato, codigoServico,
+        consultarCep, calcularPrecoPrazo,
+        CEPResposta, PrecoPrazo, PrecoPrazoResposta, getServico};
