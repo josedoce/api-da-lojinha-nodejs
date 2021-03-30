@@ -11,4 +11,20 @@ interface CreateProduct {
     servico:string;
     diametro:string;
 }
-export{CreateProduct};
+
+interface RespostaFretePrazo{
+    Codigo: string,
+    Valor: string,
+    PrazoEntrega: string,
+    ValorSemAdicionais: string,
+    ValorMaoPropria: string,
+    ValorAvisoRecebimento: string,
+    ValorDeclarado: string,
+    EntregaDomiciliar: string,
+    EntregaSabado: string,
+    obsFim: string|undefined,
+    Erro: string,
+    MsgErro: string|undefined
+}
+
+export{CreateProduct, RespostaFretePrazo};
