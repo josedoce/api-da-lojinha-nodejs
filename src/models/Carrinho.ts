@@ -38,6 +38,7 @@ class Carrinho {
     created_at: Date;
 
     @ManyToOne(()=>Clientes, clientes=>clientes.carrinho)
+    @JoinColumn({name: 'id_cliente'})
     cliente: Clientes;
     constructor(){
         if(!this.id){

@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import {v4 as uuid }from 'uuid';
 import { Carrinho } from "./Carrinho";
+import { Favoritos } from "./Favoritos";
 
 @Entity('clientes')
 class Clientes{
@@ -43,6 +44,10 @@ class Clientes{
     @OneToMany(()=>Carrinho, carrinho=>carrinho.cliente)
     carrinho: Carrinho[];
 
+    @OneToMany(()=>Favoritos, favoritos=>favoritos.cliente)
+    @JoinColumn({name: 'id_cliente'})
+    favoritos: Favoritos[];
+    
     constructor(){
         if(!this.id){
             this.id = uuid();

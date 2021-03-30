@@ -22,6 +22,7 @@ class Imagens{
     })
     @JoinColumn({name: 'id_produto'})
     imagens: Prateleira;
+    
     constructor(){
         if(!this.id){
             this.id = uuid();
