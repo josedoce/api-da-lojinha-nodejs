@@ -21,6 +21,7 @@ router
     .post('/criar_usuario',ClienteController.criarUsuario)
     .get('/logar', ClienteController.logarUsuario)
     .post('/criar_cliente', clienteAuth, ClienteController.criarCliente)
+    .get('/logout', clienteAuth, ClienteController.logout)
 
     .post('/criar_vendedor',VendedoresController.criarVendedor)
     .get('/logar_vendedor',VendedoresController.logarVendedor)
@@ -28,6 +29,9 @@ router
     .get('/carrinho',clienteAuth,CarrinhoController.carrinho)
     .put('/add_carrinho/:id_produto',clienteAuth,CarrinhoController.setCarrinho)
     .delete('/deletar_produto/:id_produto',clienteAuth,CarrinhoController.deletarCarrinho)
+    
+    .put('/add_favoritos/:id_produto',clienteAuth, CarrinhoController.addFavorito)
+    .get('/favoritos',clienteAuth, CarrinhoController.verFavoritos)
 
     .get('/exbir_produtos',vendedorAuth, VendedoresController.exibir)
     .post('/criar_produto',vendedorAuth,uploadImgs.array('arquivos',10),VendedoresController.criarProduto)

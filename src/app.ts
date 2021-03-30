@@ -5,6 +5,7 @@ import 'express-async-errors';
 import 'dotenv/config';
 import { router } from './routes';
 import createConnection from './database';
+import './gen/limpaLista';
 
 //conexao db
 createConnection();
@@ -17,6 +18,8 @@ app.use(express.urlencoded({extended: false}));
 
 //configurações de segurança
 app.use(helmet());
+
+//limpe listaNegra
 
 //rotas
 app.use(router);
