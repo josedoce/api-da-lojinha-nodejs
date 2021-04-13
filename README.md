@@ -2,7 +2,7 @@
 
 ​													![Badge](https://img.shields.io/static/v1?label=nodejs&message=server&color=blue&style=for-the-badge&logo=Node.js)![Badge](https://img.shields.io/static/v1?label=ts-js&message=languages&color=blue&style=for-the-badge&logo=typescript)
 
-![Badge](https://img.shields.io/static/v1?label=under development&message=true&color=green&?style=plastic)
+![Badge](https://img.shields.io/static/v1?label=under&nbsp;development&message=true&color=green&?style=plastic)
 
 
 ------
