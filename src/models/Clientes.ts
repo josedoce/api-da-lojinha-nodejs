@@ -45,7 +45,6 @@ class Clientes{
     carrinho: Carrinho[];
 
     @OneToMany(()=>Favoritos, favoritos=>favoritos.cliente)
-    @JoinColumn({name: 'id_cliente'})
     favoritos: Favoritos[];
     
     constructor(){

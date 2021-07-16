@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import {v4 as uuid} from 'uuid';
+import { Carrinho } from './Carrinho';
 import { Prateleira } from './Prateleira';
 
 @Entity('imagens')
@@ -28,6 +29,7 @@ class Imagens{
             this.id = uuid();
         }
     }
+    
 }
 
 export {Imagens};
