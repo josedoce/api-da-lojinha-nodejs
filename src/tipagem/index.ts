@@ -1,30 +1,29 @@
-interface CreateProduct {
+
+interface CreateProduct{
     name: string;
     description: string;
-    unid_disp: number;
     price: number;
-    peso:string;
-    formato:string;
-    comprimento:string;
-    altura:string;
-    largura:string;
-    servico:string;
-    diametro:string;
+    unid_disp: number;
+    peso: string;
+    formato: string;
+    comprimento: string;
+    altura: string;
+    largura: string;
+    servico: string;
+    diametro: string;
 }
 
-interface RespostaFretePrazo{
-    Codigo: string,
-    Valor: string,
-    PrazoEntrega: string,
-    ValorSemAdicionais: string,
-    ValorMaoPropria: string,
-    ValorAvisoRecebimento: string,
-    ValorDeclarado: string,
-    EntregaDomiciliar: string,
-    EntregaSabado: string,
-    obsFim: string|undefined,
-    Erro: string,
-    MsgErro: string|undefined
+interface CreateVendedor{
+    nome: string;
+    email: string;
+    senha: string;
 }
-
-export{CreateProduct, RespostaFretePrazo};
+interface LoginVendedor{
+    email: string;
+    senha: string;
+}
+export{
+    CreateProduct,
+    CreateVendedor,
+    LoginVendedor
+};
