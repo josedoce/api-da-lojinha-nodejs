@@ -1,14 +1,13 @@
 import {Request, Response} from 'express';
-import { Connection, ConnectionManager, getCustomRepository, getRepository } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
 import { CarrinhoRepository } from '../repositories/CarrinhoRepository';
 import { PrateleiraRepository } from '../repositories/PrateleiraRepository';
 import * as yup from 'yup'; 
 import { ClientesRepository } from '../repositories/ClientesRepository';
 import { Clientes } from '../models/Clientes';
-import {calcularPrecoPrazo, CEPResposta, PrecoPrazo, getServico, consultarCep as pegaCep} from '../services/CorreioBrasilApi';
-import { RespostaFretePrazo } from '../tipagem';
-import { Favoritos } from '../models/Favoritos';
+
 import { FavoritosRepository } from '../repositories/FavoritosRepository';
+import { someFreightApi } from '../services/externo/shippingApi';
 
 
 class CarrinhoController {
@@ -54,26 +53,10 @@ class CarrinhoController {
         }
 
         const cliente = getCustomRepository(ClientesRepository);
-        const hasCliente = await cliente.find({where: {id: id}});
+        const hasCliente = await cliente.findOne({where: {id: id}});
 
         
-        const entrega:PrecoPrazo = { 
-            sCepOrigem:  "14403-471",
-            sCepDestino:  hasCliente[0].endereco.split(',')[5],
-            nVlPeso:  produto.peso.split('kg').join(''),
-            nCdFormato:  produto.formato,
-            nVlComprimento:  produto.comprimento,
-            nVlAltura:  produto.altura,
-            nVlLargura:  produto.largura,
-            nCdServico:  produto.servico.split(','), //Array com os códigos de serviço
-            nVlDiametro: produto.diametro == 'null'?'0':produto.diametro,
-        }
-
-        const frete1 = Object.values(await calcularPrecoPrazo(entrega));
-        const escolha = getServico(opcao_frete)
-        const qualFrete = frete1.find((e: RespostaFretePrazo)=> e.Codigo == escolha.codigo)
-
-        const frete:number = Number(qualFrete['ValorSemAdicionais'].split(',').join(''));//logo usarei uma api
+        const frete:number = someFreightApi(hasCliente, produto);
 
         const total:number = (produto.preco_und * Number(qtd)) + (Number(qtd)*frete);
 
@@ -103,25 +86,48 @@ class CarrinhoController {
         res.status(200).json(salvouCarrinho);
     }
     async addFavorito(req: Request , res: Response){
-        
-        const produto = getRepository(Favoritos);
-        const crie = produto.create({
-            id_cliente: 'e0b7d584-9b41-4102-8352-cceb56846b28',
-            id_produto: '2777a5ec-47f2-4e97-91af-59b15241d1ab'
-        })
-        const salvo = await produto.save(crie);
+        const {id_produto} = req.params;
+        const schema = yup.string().required("Um id valido é necessario.");
+        try {
+            await schema.validate(id_produto, {abortEarly: false});
+        } catch (error) {
+            return res.status(406).json(error.message);
+        }
 
-        res.status(201).json(salvo)
+        const produto = getCustomRepository(FavoritosRepository);
+        const productExists = await produto.findOne({id_produto: id_produto});
+        
+        if(!productExists){
+            const crie = produto.create({
+                id_cliente: String(req.usuario.id),
+                id_produto: String(id_produto)
+            })
+            const salvo = await produto.save(crie);
+            return res.status(201).json(salvo);
+        }
+        return res.status(400).json({error: "já esta nos favoritos."});
     }
     async deletarFavorito(req: Request , res: Response){
-
+        const {id_produto} = req.params;
+        const produto = getCustomRepository(FavoritosRepository);
+        const productExists = await produto.findOne({id_produto: id_produto});
+        
+        if(productExists){
+            await produto.delete({id_produto: id_produto});
+            return res.status(201).json({success: "sucesso ao apagar."});
+        }
+        return res.status(400).json({error: "Este produto já foi apagado ou não existe em nossa base de dados."});
     }
     async verFavoritos(req: Request , res: Response){
 
         const produto = getCustomRepository(ClientesRepository);
-        const achou = await produto.getFavoritos(String(req.usuario.id), false);
         
-        res.status(201).json(achou);
+        const {nome, favoritos} = await produto.findOne({
+            where: {id: String(req.usuario.id)},
+            relations: ['favoritos']
+        })
+        
+        res.status(201).json({nome, favoritos});
     }
     async deletarCarrinho(req: Request, res: Response){
         const produto = getCustomRepository(CarrinhoRepository);
@@ -136,8 +142,4 @@ class CarrinhoController {
     }
 }
 
-export default new CarrinhoController();
-
-function consultarCep(arg0: string) {
-    throw new Error('Function not implemented.');
-}
+export {CarrinhoController};
