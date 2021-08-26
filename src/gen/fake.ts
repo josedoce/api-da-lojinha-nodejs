@@ -4,7 +4,7 @@ import {v4 as uuid} from 'uuid';
 import faker from 'faker/locale/pt_BR';
 
 const algunsProdutos = getCustomRepository(PrateleiraRepository);
-export function gerarProdutos(vezes: number, vendedor: string){
+export function gerarProdutos(vezes: number, vendedor: string, setdb: boolean = true){
     for(let i = 0; i < vezes; i++){
         const salveProduto = algunsProdutos.create({
             id_vendedor: vendedor,
