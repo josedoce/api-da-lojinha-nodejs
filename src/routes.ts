@@ -26,7 +26,7 @@ import { limiteImages } from './controllers/middleware/limiteImages';
 router
     //home
     .get('/', (req, res)=>{
-        res.send("home")
+        res.status(201).send("home")
     })
     //home
 
